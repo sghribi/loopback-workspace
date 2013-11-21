@@ -18,6 +18,7 @@ temp.track();
 
 // clear any persisting data
 beforeEach(function (done) {
+  Project.dataSource.settings.root = sandbox;
   async.parallel([
     Project.destroyAll.bind(Project),
     Model.destroyAll.bind(Model),

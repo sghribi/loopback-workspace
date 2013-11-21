@@ -18,15 +18,13 @@ var PACKAGE = require('../templates/package');
 Project.validatesUniquenessOf('name');
 Project.validatesPresenceOf('name');
 
+Project.settings.file = 'app.json';
+Project.settings.single = true;
+
 Project.loadFromFiles = function (dir, cb) {
-  async.waterfall([
-    function (cb) {
-      loadConfigFilesWithExt(dir, 'json', cb);
-    },
-    function (projectConfig, cb) {
-      Project.fromConfig(projectConfig, cb);
-    }
-  ], cb);
+  this.dataSource.settings.root = dir;
+
+  
 }
 
 Project.prototype.saveToFiles = function (dir, cb) {

@@ -3,7 +3,7 @@ var app = module.exports = loopback();
 var DEFAULT_DATASOURCE = 'db';
 
 app.dataSource('db', {
-  connector: loopback.Memory
+  connector: require('./datasources/json-file')
 });
 
 var Project = app.model('project', {dataSource: DEFAULT_DATASOURCE});
