@@ -197,21 +197,50 @@ describe('DataSourceDefinition', function() {
     });
   });
 
-  describe.skip('dataSourceDefinition.automigrate(callback)', function() {
+  describe('dataSourceDefinition.automigrate(callback)', function() {
     it('should call dataSource.automigrate()', function(done) {
+      var called = false;
+      var hooks = {};
 
+      hooks.automigrate = function(cb) {
+        called = true;
+        cb();
+      };
+
+      var mockDs = getMockDataSourceDef(hooks);
+
+      mockDs.automigrate(function(err) {
+        expect(err).to.not.exist;
+        expect(called).to.equal(true);
+        done();
+      });
     });
   });
 
 
   describe.skip('dataSourceDefinition.autoupdate(callback)', function() {
     it('should call dataSource.autoupdate()', function(done) {
+      var called = false;
+      var hooks = {};
 
+      hooks.autoupdate = function(cb) {
+        called = true;
+        cb();
+      };
+      
+      var mockDs = getMockDataSourceDef();
+
+      mockDs.autoupdate(function(err) {
+        expect(err).to.not.exist;
+        expect(called).to.equal(true);
+        done();
+      });
     });
   });
 });
 
-function getMockDataSourceDef() {
+function getMockDataSourceDef(hooks) {
+  hooks = hooks || {};
   var def = new DataSourceDefinition({
     connector: 'memory',
     name: 'db'
@@ -276,6 +305,20 @@ function getMockDataSourceDef() {
           }
         }
       });
+    },
+    automigrate: function(cb) {
+      if(hooks.automigrate) {
+        hooks.automigrate(cb);
+      } else {
+        cb();
+      }
+    },
+    autoupdate: function() {
+      if(hooks.autoupdate) {
+        hooks.autoupdate(cb);
+      } else {
+        cb();
+      }
     }
   };
 

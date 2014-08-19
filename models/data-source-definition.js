@@ -1,6 +1,8 @@
 var app = require('../app');
 var loopback = require('loopback');
 var debug = require('debug')('workspace:data-source-definition');
+var ModelConfig = app.models.ModelConfig;
+var async = require('async');
 
 /*
  TODOs
@@ -151,8 +153,10 @@ loopback.remoteMethod(DataSourceDefinition.prototype.getSchema, {
  * @param {Error} err
  */
 
-DataSourceDefinition.prototype.automigrate = function() {
-  throw new Error('not implemented');
+DataSourceDefinition.prototype.automigrate = function(model, cb) {
+  var ds = this.toDataSource();
+  
+  .automigrate(model, cb);
 }
 
 /**
@@ -162,8 +166,59 @@ DataSourceDefinition.prototype.automigrate = function() {
  * @param {Error} err
  */
 
-DataSourceDefinition.prototype.autoupdate = function() {
-  throw new Error('not implemented');  
+DataSourceDefinition.prototype.autoupdate = function(model, cb) {
+  this.toDataSource().autoupdate(model, cb);
+}
+
+/**
+ * Create a `loopback.DataSource` object from this `DataSourceDefinition`
+ * including all `loopback.Model` instances that should be attached.
+ */
+
+DataSourceDefinition.prototype.toDataSourceWithModels = function(modelFacet, cb) {
+  var def = this;
+  var dataSource;
+  modelFacet = modelFacet || 'common';
+
+  try {
+    dataSource = this.toDataSource();
+  } catch(e) {
+    return cb(e);
+  }
+
+  async.waterfall([
+    getConfigs,
+    getModels,
+    attachModels
+  ], cb);
+
+  function getConfigs(cb) {
+    ModelConfig.findOne({
+      facetName: def.facetName,
+      dataSource: def.name
+    }, cb);
+  }
+
+  function getModels(configs, cb) {
+    var modelNames = configs.map(function(cfg) { return cfg.name; });
+    ModelDefinition.find({
+      where: {
+        facetName: modelFacet,
+        name: {inq: modelNames}
+    }, cb);
+  }
+
+  function attachModels(models, cb) {
+    for(var i = 0; i < models.length; i++) {
+      try {
+        var ctor = models[i].toModelCtor();
+        ctor.attachTo(dataSource);
+      } catch(e) {
+        return cb(e);
+      }
+    }
+    cb(null, dataSource);
+  }
 }
 
 /**
