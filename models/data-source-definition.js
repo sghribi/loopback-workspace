@@ -76,23 +76,8 @@ loopback.remoteMethod(DataSourceDefinition.prototype.testConnection, {
  * @param {Boolean} success `true` if the connection was established
  */
 DataSourceDefinition.testConnection = function(data, cb) {
-  // A legacy implementation that runs the test in loopback-workspace process
-  try {
-    var dataSource = new DataSourceDefinition(data).toDataSource();
-    dataSource.ping(function(err) {
-      cb(err, !err);
-    });
-  } catch (err) {
-    debug('Cannot connect to the data source.\nData: %j\nError: %s', data, err);
-
-    // NOTE(bajtos) juggler ignores unknown connector and let the application
-    // crash later, when a method of undefined connector is called
-    // We have to build a useful error message ourselves
-
-    return cb(
-      new Error('Cannot connect to the data source.' +
-        ' Ensure the configuration is valid and the connector is installed.'));
-  }
+  var def = new DataSourceDefinition(data);
+  def.testConnection(cb);
 };
 
 DataSourceDefinition.remoteMethod('testConnection', {
@@ -118,7 +103,7 @@ DataSourceDefinition.remoteMethod('testConnection', {
  */
 
 DataSourceDefinition.prototype.discoverModelDefinition = function(name, options, cb) {
-  this.toDataSource().discoverSchemas(name, options, cb);
+  this.invokeMethodInWorkspace('discoverSchemas', name, options, cb);
 }
 
 loopback.remoteMethod(DataSourceDefinition.prototype.discoverModelDefinition, {
@@ -147,7 +132,7 @@ loopback.remoteMethod(DataSourceDefinition.prototype.discoverModelDefinition, {
  */
 
 DataSourceDefinition.prototype.getSchema = function(options, cb) {
-  this.toDataSource().discoverModelDefinitions(options, cb);
+  this.invokeMethodInWorkspace('discoverModelDefinitions', options, cb);
 }
 
 loopback.remoteMethod(DataSourceDefinition.prototype.getSchema, {
@@ -268,9 +253,12 @@ DataSourceDefinition.prototype.invokeMethodInWorkspace = function() {
 /**
  * Create a `loopback.DataSource` object from the `DataSourceDefinition`.
  *
+ * @deprecated Use `invokeMethodInWorkspace()` instead
+ *
  * @returns {DataSource}
  */
 
 DataSourceDefinition.prototype.toDataSource = function() {
+  console.log('deprecated dataSourceDefinition.toDataSource()');
   return loopback.createDataSource(this.name, this);
 }
