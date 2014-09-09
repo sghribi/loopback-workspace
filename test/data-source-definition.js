@@ -119,7 +119,7 @@ describe('DataSourceDefinition', function() {
     });
   });
 
-  describe('dataSourceDefinition.toDataSource()', function () {
+  describe.skip('dataSourceDefinition.toDataSource()', function () {
     it('should get an actual dataSource object', function () {
       var dataSourceDef = new DataSourceDefinition({
         connector: 'memory',
@@ -129,7 +129,7 @@ describe('DataSourceDefinition', function() {
     });
   });
 
-  describe('DataSourceDefinition.testConnection(data, callback)', function() {
+  describe.skip('DataSourceDefinition.testConnection(data, callback)', function() {
     it('returns true for memory connector', function(done) {
       DataSourceDefinition.testConnection(
         {
@@ -158,7 +158,7 @@ describe('DataSourceDefinition', function() {
     });
   });
 
-  describe('dataSourceDefinition.getSchema(callback)', function() {
+  describe.skip('dataSourceDefinition.getSchema(callback)', function() {
     it('Test the datasource definition connection.', function(done) {
       var dataSourceDef = getMockDataSourceDef();
 
@@ -170,7 +170,7 @@ describe('DataSourceDefinition', function() {
     });
   });
 
-  describe('dataSourceDefinition.discoverModelDefinition(name, callback)', function() {
+  describe.skip('dataSourceDefinition.discoverModelDefinition(name, callback)', function() {
     it('Test the datasource definition connection.', function(done) {
       var dataSourceDef = getMockDataSourceDef();
 
