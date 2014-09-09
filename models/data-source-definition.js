@@ -184,13 +184,12 @@ DataSourceDefinition.prototype.invokeMethodInWorkspace = function() {
   // TODO(bajtos) We should ensure there is never more than one instance
   // of this code running at any given time.
   var self = this;
-  var args = Array.prototype.slice.call(arguments);
+  var methodArgs = Array.prototype.slice.call(arguments);
+  var processArgs = [];
   var cb = args.pop();
 
   // remove optional parameters with 'undefined' value
   while (args[args.length-1] === undefined) args.pop();
-
-  args.unshift(self.name);
 
   debug('invoke dataSource', args.map(JSON.stringify).join(' '));
 

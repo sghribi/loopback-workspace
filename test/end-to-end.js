@@ -242,6 +242,65 @@ describe('end-to-end', function() {
     });
   });
 
+  describeOnLocalMachine('getSchema', function () {
+    var DataSourceDefinition = models.DataSourceDefinition;
+    
+    before(givenBasicWorkspace);
+
+    before(function addMySQLConnector(done) {
+      models.PackageDefinition.findOne({}, function(err, pkg) {
+        if (err) return done(err);
+        pkg.dependencies['loopback-connector-mysql'] = '1.x';
+        pkg.save(done);
+      });
+    });
+
+    before(installSandboxPackages);
+
+    before(function(done) {
+      connection = mysql.createConnection({
+        database: MYSQL_DATABASE,
+        user: MYSQL_USER,
+        password: MYSQL_PASSWORD
+      });
+      connection.connect(done);
+    })
+
+    beforeEach(function(done) {
+      var createTable = [
+        'CREATE TABLE Persons',
+        '(',
+        'P_Id int NOT NULL,',
+        'LastName varchar(255) NOT NULL,',
+        'FirstName varchar(255),',
+        'Address varchar(255),',
+        'City varchar(255)',
+        ')'
+      ].join('\n');
+      connection.query(createTable, done);
+    });
+
+    beforeEach(function(done) {
+      var test = this;
+      DataSourceDefinition.findOne({where: {name: 'db'}}, function(err, db) {
+        if(err) return done(err);
+        test.db = db;
+        done();
+      });
+    });
+
+    it('should include the correct table name', function(done) {
+      this.db.getSchema({}, function(err, schema) {
+        console.log('Schema', schema);
+        done();
+      });
+    });
+
+    after(function(done) {
+      connection.query('DROP TABLE Persons', done);
+    });
+  });
+
   describe('testConnection', function() {
     var DataSourceDefinition = models.DataSourceDefinition;
 
