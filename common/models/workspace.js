@@ -495,18 +495,6 @@ module.exports = function(Workspace) {
       returns: {arg: 'data', type: 'Object', root: true}
     });
 
-    // Trigger export for loopback-api-definition
-    // Workspace.apiDefinition = function(cb) {
-    //   var apiDef = require('loopback-api-definition');
-    //   //cb(apiDef.getApiDef(app, {}));
-    //   cb(null, {data: apiDef.getApiDef(app, {})});
-    // };
-
-    // loopback.remoteMethod(Workspace.apiDefinition, {
-    //   http: {verb: 'get', path: '/api-definition'},
-    //   returns: {arg: 'data', type: 'Object'}
-    // });
-
     Workspace.exportSwagger = function(cb) {
       var apiDef = require('loopback-api-definition');
       var result = apiDef.getApiDef(app, {});
@@ -517,7 +505,5 @@ module.exports = function(Workspace) {
     loopback.remoteMethod(Workspace.exportSwagger, {
       http: {verb: 'get', path: '/export-swagger'},
       returns: {arg: 'data', type: 'string'}
-    });
-
-  }
+    };
 };
