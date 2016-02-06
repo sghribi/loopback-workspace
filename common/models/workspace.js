@@ -486,5 +486,17 @@ module.exports = function(Workspace) {
       returns: {arg: 'data', type: 'Object', root: true}
     });
 
+    // Trigger export for loopback-api-definition
+    Workspace.exportApiDefinition = function() {
+      var apiDef = require('../../node_modules/loopback-api-definition/lib/get-api-def');
+      // loopback app is created at the beginning of Workspace function
+      var value = apiDef.getApiDef(app, {format: 'yaml'});
+    };
+
+    loopback.remoteMethod(Workspace.exportApiDefinition, {
+      http: {verb: 'get', path: '/get-api-definition'},
+      returns: {arg: 'data', type: 'Object', root: true}
+    });
+
   }
 };
