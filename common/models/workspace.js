@@ -487,15 +487,27 @@ module.exports = function(Workspace) {
     });
 
     // Trigger export for loopback-api-definition
-    Workspace.exportApiDefinition = function() {
-      var apiDef = require('../../node_modules/loopback-api-definition/lib/get-api-def');
-      // loopback app is created at the beginning of Workspace function
-      var value = apiDef.getApiDef(app, {format: 'yaml'});
+    // Workspace.apiDefinition = function(cb) {
+    //   var apiDef = require('loopback-api-definition');
+    //   //cb(apiDef.getApiDef(app, {}));
+    //   cb(null, {data: apiDef.getApiDef(app, {})});
+    // };
+
+    // loopback.remoteMethod(Workspace.apiDefinition, {
+    //   http: {verb: 'get', path: '/api-definition'},
+    //   returns: {arg: 'data', type: 'Object'}
+    // });
+
+    Workspace.exportSwagger = function(cb) {
+      var apiDef = require('loopback-api-definition');
+      var result = apiDef.getApiDef(app, {});
+      debug(result);
+      cb(null, result);
     };
 
-    loopback.remoteMethod(Workspace.exportApiDefinition, {
-      http: {verb: 'get', path: '/get-api-definition'},
-      returns: {arg: 'data', type: 'Object', root: true}
+    loopback.remoteMethod(Workspace.exportSwagger, {
+      http: {verb: 'get', path: '/export-swagger'},
+      returns: {arg: 'data', type: 'string'}
     });
 
   }
