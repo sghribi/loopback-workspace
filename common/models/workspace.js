@@ -505,5 +505,7 @@ module.exports = function(Workspace) {
     loopback.remoteMethod(Workspace.exportSwagger, {
       http: {verb: 'get', path: '/export-swagger'},
       returns: {arg: 'data', type: 'string'}
-    };
+    });
+
+  }
 };
