@@ -495,16 +495,16 @@ module.exports = function(Workspace) {
       returns: {arg: 'data', type: 'Object', root: true}
     });
 
-    Workspace.exportSwagger = function(cb) {
-      var apiDef = require('loopback-api-definition');
-      var result = apiDef.getApiDef(app, {});
-      debug(result);
-      cb(null, result);
+    Workspace.apiConnectLoopback = function() {
+      var apicLoopback = require('apiconnect-cli-loopback');
+      //var fs = require('fs');
+
+      apicLoopback.genApiAndProduct(process.env.WORKSPACE_DIR);
     };
 
-    loopback.remoteMethod(Workspace.exportSwagger, {
-      http: {verb: 'get', path: '/export-swagger'},
-      returns: {arg: 'data', type: 'string'}
+    loopback.remoteMethod(Workspace.apiConnectLoopback, {
+      http: {verb: 'get', path: '/api-connect-loopback'},
+      returns: {arg: 'data', type: 'Object'}
     });
 
   }
