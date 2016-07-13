@@ -63,6 +63,7 @@ function ready(ModelAccessControl) {
     cb(null, [
       { name: 'Explicitly grant access', value: ACL.ALLOW },
       { name: 'Explicitly deny access', value: ACL.DENY },
+	    { name: 'Security scope', value: ACL.SECURITY_SCOPE }
       /* not supported by loopback yet
       { name: 'Generate an alarm of the access', value: ACL.ALARM },
       { name: 'Log the access', value: ACL.AUDIT },
